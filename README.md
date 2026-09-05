@@ -540,49 +540,50 @@ The dashboard provides visibility into:
 
 # 📸 Screenshots
 
-Store screenshots in:
 
-```text
-docs/screenshots/
-├── dashboard.png
-├── recovery-feed.png
-├── case-detail.png
-├── analytics.png
-├── audit-trail.png
-└── human-review.png
-```
+# 📸 Screenshots
 
-Add them to the README:
+### Dashboard
 
-```markdown
-![Dashboard](docs/screenshots/dashboard.png)
+![REVIVE Dashboard](Dashboard.png)
 
-![Recovery Feed](docs/screenshots/recovery-feed.png)
+### Recovery Feed
 
-![Case Detail](docs/screenshots/case-detail.png)
+![REVIVE Recovery Feed](recovery%20-%20feed.png)
 
-![Analytics](docs/screenshots/analytics.png)
+### Case Detail
 
-![Audit Trail](docs/screenshots/audit-trail.png)
+![REVIVE Case Detail](case-detail.png)
 
-![Human Review](docs/screenshots/human-review.png)
+### Analytics
+
+![REVIVE Analytics](Analytics.png)
+
+### Audit Trail
+
+![REVIVE Audit Trail](audit-trail.png)
+
+### Human Review
+
+![REVIVE Human Review](human-review.png)
+
 ```
 
 ---
+🔌 API Overview
 
-# 🔌 API Overview
-
-| Method   | Endpoint                   | Purpose          |
-| -------- | -------------------------- | ---------------- |
-| **GET**  | `/`                        | Backend status   |
-| **GET**  | `/health`                  | Health check     |
+|  Method  | Endpoint                   | Purpose          |
+| :------: | :------------------------- | :--------------- |
+|  **GET** | `/`                        | Backend status   |
+|  **GET** | `/health`                  | Health check     |
 | **POST** | `/webhooks/razorpay`       | Razorpay webhook |
-| **GET**  | `/api/dashboard`           | Dashboard data   |
-| **GET**  | `/api/dashboard/analytics` | Analytics        |
-| **GET**  | `/api/cases`               | Revenue cases    |
-| **GET**  | `/api/recovery`            | Recovery actions |
-| **GET**  | `/api/audit`               | Audit events     |
-| **GET**  | `/api/review`              | Human review     |
+|  **GET** | `/api/dashboard`           | Dashboard data   |
+|  **GET** | `/api/dashboard/analytics` | Analytics        |
+|  **GET** | `/api/cases`               | Revenue cases    |
+|  **GET** | `/api/recovery`            | Recovery actions |
+|  **GET** | `/api/audit`               | Audit events     |
+|  **GET** | `/api/review`              | Human review     |
+
 
 ---
 
