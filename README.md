@@ -1,1581 +1,811 @@
-REVIVE — Autonomous AI Revenue Recovery Agent
+# REVIVE — Autonomous AI Revenue Recovery Agent
 
-Detect revenue at risk → Diagnose → Decide → Act → Verify → Recover → Audit
 
-REVIVE is an autonomous AI-powered revenue recovery platform designed to identify revenue-loss events, assess their risk, diagnose the likely cause, choose a bounded recovery action, execute that action through Razorpay, verify the outcome, and maintain a complete audit trail.
+> **“REVIVE isn't optimized to take the most actions. It's optimized to take the right actions.”**
 
-The system combines deterministic business rules, machine-learning risk scoring, structured LLM reasoning, Razorpay integrations, PostgreSQL persistence, and a React analytics dashboard to demonstrate an end-to-end revenue recovery workflow.
 
-🚀 Overview
+---
 
-Revenue leakage can happen when:
+## 🚀 Overview
 
-a payment fails temporarily,
+REVIVE is an autonomous AI revenue recovery platform that detects revenue-loss events, evaluates risk using Machine Learning, retrieves relevant context using **RAG**, uses an LLM to diagnose and recommend recovery actions, executes approved actions through Razorpay, verifies outcomes, and maintains a complete audit trail.
 
-a customer abandons checkout,
+REVIVE focuses on:
 
-a recurring subscription charge fails,
+* Failed payments
+* Checkout abandonment
+* Subscription failures
+* Overdue receivables
+* Repeated payment failures
 
-an invoice becomes overdue,
+ **Detect Revenue at Risk → Diagnose → Decide → Act → Verify → Recover → Audit**
 
-or repeated recovery attempts continue without a successful payment.
 
-REVIVE treats each event as a revenue-risk case.
+---
 
-For every case, the platform follows a controlled pipeline:
+## 🎯 Problem Statement
 
+Businesses lose revenue because of failed payments, abandoned checkouts, overdue invoices, and recurring payment failures.
+
+Traditional recovery systems may:
+
+* Miss recovery opportunities
+* Retry unnecessarily
+* Treat every customer the same
+* Lack decision transparency
+* Continue automated retries without sufficient safety controls
+
+REVIVE provides an intelligent but **bounded recovery process**.
+
+---
+
+## ✨ Key Capabilities
+
+* **AI-powered diagnosis and decision making**
+* **ML-based revenue-risk scoring**
+* **Retrieval-Augmented Generation (RAG)**
+* Structured JSON AI responses
+* Deterministic Revenue Risk Engine
+* Policy and safety controls
+* Razorpay Payments
+* Razorpay Payment Links
+* Subscription-related event handling
+* Webhook processing
+* Webhook signature verification
+* Webhook event-id idempotency
+* Payment verification
+* Human-in-the-loop review
+* Recovery analytics
+* Complete audit trail
+
+---
+
+# 🔄 System Workflow
+
+```text
+Revenue Event
+     ↓
+Event Ingestion
+     ↓
+Revenue Risk Engine
+     ↓
+ML Risk Score
+     ↓
+RAG Context Retrieval
+     ↓
+AI Diagnosis
+     ↓
+AI Decision
+     ↓
+Policy Engine
+     ├── APPROVE → Recovery → Verification → ₹ Recovered
+     ├── BLOCK   → STOP
+     └── HUMAN   → Human Review
+                              ↓
+                         Audit Trail
+```
+
+---
+
+# 🏗️ Architecture
+
+```text
+                         ┌──────────────┐
+                         │   RAZORPAY   │
+                         └──────┬───────┘
+                                ↓
+                     ┌─────────────────────┐
+                     │  EVENT INGESTION    │
+                     └──────────┬──────────┘
+                                ↓
+                  ┌──────────────────────────┐
+                  │ REVENUE RISK ENGINE      │
+                  └────────────┬─────────────┘
+                               ↓
+                     ┌──────────────────┐
+                     │  ML RISK SCORE   │
+                     └────────┬─────────┘
+                              ↓
+                     ┌──────────────────┐
+                     │   RAG RETRIEVAL  │
+                     │ Relevant Context │
+                     └────────┬─────────┘
+                              ↓
+                ┌──────────────────────────┐
+                │       AI ENGINE          │
+                │ Diagnosis + Decision     │
+                └────────────┬─────────────┘
+                             ↓
+                  ┌────────────────────┐
+                  │   POLICY ENGINE    │
+                  └──────┬─────┬───────┘
+                         │     │
+                  APPROVE│     │BLOCK
+                         ↓     ↓
+                  ┌─────────┐ STOP
+                  │RECOVERY │
+                  └────┬────┘
+                       ↓
+                 ┌────────────┐
+                 │ VERIFICATION│
+                 └──────┬─────┘
+                        ↓
+              ┌──────────────────┐
+              │ ₹ REVENUE        │
+              │ RECOVERED        │
+              └────────┬─────────┘
+                       ↓
+                ┌────────────┐
+                │ AUDIT TRAIL│
+                └────────────┘
+
+                    HUMAN
+                      ↑
+                 ┌────┴─────┐
+                 │  REVIEW  │
+                 └──────────┘
+```
+
+### Component Responsibilities
+
+| Component               | Responsibility                                          |
+| ----------------------- | ------------------------------------------------------- |
+| **Event Ingestion**     | Receives revenue events and Razorpay webhooks           |
+| **Revenue Risk Engine** | Identifies revenue-risk signals                         |
+| **ML Risk Scoring**     | Calculates revenue-risk score                           |
+| **RAG Layer**           | Retrieves relevant knowledge and contextual information |
+| **AI Engine**           | Provides diagnosis and recovery recommendation          |
+| **Policy Engine**       | Validates actions and enforces safety rules             |
+| **Recovery Engine**     | Executes approved recovery actions                      |
+| **Verification**        | Confirms successful recovery                            |
+| **Human Review**        | Handles escalated cases                                 |
+| **Audit Trail**         | Records decisions, actions, and outcomes                |
+
+---
+
+# 🤖 AI, ML & RAG Intelligence
+
+AI and Machine Learning form the core intelligence layer of REVIVE.
+
+## 🧠 Machine Learning — Risk Scoring
+
+REVIVE uses **scikit-learn** to calculate a revenue-risk score for each revenue event.
+
+The risk analysis can consider:
+
+* Payment failure history
+* Customer payment behavior
+* Transaction amount
+* Previous purchases
+* Retry count
+* Days overdue
+* Time since checkout abandonment
+* Failure reason
+
+The ML model produces a **risk score** that helps prioritize revenue-loss cases.
+
+### ML Flow
+
+```text
+Customer + Transaction Data
+             ↓
+      Feature Extraction
+             ↓
+       ML Risk Model
+             ↓
+        Risk Score
+             ↓
+       AI Decision
+```
+
+---
+
+## 📚 RAG — Context-Aware Intelligence
+
+REVIVE uses **Retrieval-Augmented Generation (RAG)** to provide relevant context to the AI before making a recovery recommendation.
+
+RAG can retrieve relevant information such as:
+
+* Recovery policies
+* Retry rules
+* Business-specific guidelines
+* Customer context
+* Previous recovery outcomes
+* Scenario-specific information
+
+Instead of relying only on the LLM's internal knowledge, the system retrieves relevant context and provides it to the AI.
+
+### RAG Flow
+
+```text
 Revenue Event
       ↓
-Event Ingestion
+Query / Context Creation
       ↓
-Revenue Risk Engine
+Knowledge Retrieval
       ↓
-ML Risk Score
+Relevant Context
       ↓
-AI Diagnosis
+LLM
       ↓
-AI Decision
-      ↓
-Policy Engine
-      ↓
- ┌───────────────┬────────────────┬──────────────────┐
- │ APPROVE       │ BLOCK          │ HUMAN            │
- │               │                │ REVIEW           │
- ↓               ↓                ↓
-Execute          Stop            Human Decision
-Recovery         Action          / Escalation
- │                                │
- └───────────────┴────────────────┘
-                  ↓
-             Verification
-                  ↓
-       Revenue Recovered / Pending
-                  ↓
-             Audit Trail
+Diagnosis + Recommendation
+```
 
-🎯 Problem Statement
+---
 
-Traditional payment-recovery systems often rely on static retries or manual follow-up. This can lead to:
+## 🧠 AI — Diagnosis & Decision
 
-missed recovery opportunities,
+REVIVE uses an **LLM API** for intelligent reasoning.
 
-unnecessary retries,
+### AI Diagnosis
 
-poor prioritization,
+The AI analyzes:
 
-weak visibility into why an action was selected,
+* Revenue event
+* Customer information
+* ML risk score
+* Retrieved RAG context
 
-and uncontrolled automated behavior.
+to determine:
 
-REVIVE addresses these problems by combining risk scoring, AI reasoning, deterministic policy controls, payment execution, verification, and human oversight in a single workflow.
+* Why revenue is at risk
+* Likely failure cause
+* Relevant context
+* Recovery situation
 
-🎯 Objectives
+### AI Decision
 
-REVIVE is designed to:
-
-Detect revenue at risk.
-
-Determine the likely reason for the revenue loss.
-
-Score the risk using a machine-learning model.
-
-Use structured AI reasoning to recommend an action.
-
-Apply deterministic policy and safety rules.
-
-Execute approved recovery actions.
-
-Verify whether recovery actually occurred.
-
-Track recovered revenue.
-
-Escalate cases that should not be handled automatically.
-
-Maintain a complete audit history.
-
-Provide business-facing analytics through a web dashboard.
-
-✨ Key Capabilities
-
-Revenue Intelligence
-
-Revenue-risk case creation
-
-Customer and transaction context
-
-ML-based risk scoring
-
-Scenario classification
-
-Revenue-at-risk tracking
-
-AI Layer
-
-AI diagnosis
-
-AI recovery decision
-
-Structured JSON-oriented reasoning
-
-Customer/payment context passed to the decision layer
-
-Recovery
-
-Payment retry
-
-Razorpay Payment Link creation
-
-Reminder/recovery action
-
-Human escalation
-
-Recovery verification
-
-Safety
-
-Deterministic policy engine
-
-Automatic retry limits
-
-STOP behavior after repeated failures
-
-Human-in-the-loop review
-
-Webhook event-idempotency
-
-Razorpay webhook signature verification
-
-Observability
-
-Recovery feed
-
-Case details
-
-Analytics
-
-Audit trail
-
-Human review queue
-
-🔄 System Workflow
-
-The complete REVIVE workflow consists of the following stages.
-
-1. Event Ingestion
-
-A revenue-related event enters the system.
-
-Examples:
-
-payment.failed
-checkout.abandoned
-subscription.charged.failed
-invoice.overdue
-
-Razorpay webhook events can be received through:
-
-POST /webhooks/razorpay
-
-The system records the event before processing it.
-
-2. Revenue Risk Engine
-
-The Revenue Risk Engine evaluates the event using deterministic business logic and available customer/payment context.
-
-Relevant signals can include:
-
-transaction amount,
-
-customer history,
-
-previous purchases,
-
-payment history,
-
-retry count,
-
-failure reason,
-
-time since abandonment,
-
-days overdue,
-
-payment behavior,
-
-scenario type.
-
-The result is a normalized risk score used by downstream decision-making.
-
-3. ML Risk Score
-
-REVIVE includes a scikit-learn-based risk scoring component.
-
-The score helps prioritize cases according to the likelihood and severity of revenue loss.
-
-Conceptually:
-
-Customer + Payment + Transaction Features
-                  ↓
-           Feature Processing
-                  ↓
-        ML Risk Scoring Model
-                  ↓
-             Risk Score
-
-4. AI Diagnosis
-
-The AI Diagnosis Engine determines the likely reason behind the revenue risk.
-
-Examples:
-
-Temporary gateway/payment issue
-Checkout abandonment
-Subscription payment failure
-Overdue receivable
-Repeated payment failure
-
-The diagnosis is designed to provide structured information for the decision layer rather than allowing unrestricted automated behavior.
-
-5. AI Decision
-
-The AI Decision Engine recommends an action based on the case context.
+The AI recommends the most appropriate recovery action.
 
 Possible actions include:
 
-retry_payment
-payment_link
-reminder
-human_escalation
+* `retry_payment`
+* `payment_link`
+* `reminder`
+* `human_escalation`
+* `no_action`
 
-The AI recommendation is not directly trusted as the final authority.
+### Structured Output
 
-It must pass through the Policy Engine.
+AI responses are returned as **structured JSON**, allowing the backend to reliably consume the diagnosis and recommendation.
 
-6. Policy Engine
+---
 
-The Policy Engine is the safety boundary between AI reasoning and real-world recovery execution.
+## 🔄 Combined AI + ML + RAG Pipeline
 
-AI Recommendation
-       ↓
-Policy Evaluation
-       ↓
- ┌──────────┬────────┬─────────────┐
- │ APPROVE  │ BLOCK  │ HUMAN       │
- │          │        │ ESCALATION  │
- └──────────┴────────┴─────────────┘
+```text
+                    REVENUE EVENT
+                          ↓
+                ┌──────────────────┐
+                │   ML RISK MODEL  │
+                └────────┬─────────┘
+                         ↓
+                    RISK SCORE
+                         ↓
+              ┌─────────────────────┐
+              │   RAG RETRIEVAL     │
+              │   Relevant Context  │
+              └──────────┬──────────┘
+                         ↓
+              ┌─────────────────────┐
+              │        LLM          │
+              │ Diagnosis + Decision│
+              └──────────┬──────────┘
+                         ↓
+                 STRUCTURED JSON
+                         ↓
+                ┌──────────────────┐
+                │  POLICY ENGINE   │
+                └────────┬─────────┘
+                         ↓
+              APPROVE / BLOCK / HUMAN
+```
 
-The policy layer enforces deterministic controls such as retry limits.
+---
 
-7. Recovery Execution
+## 🛡️ Bounded AI Autonomy
 
-When an action is approved, REVIVE executes the selected recovery action.
+**AI does not directly control payments.**
 
-Examples:
-
-Payment Retry
-
-Failed payment
-      ↓
-Policy approval
-      ↓
-Retry
-      ↓
-Payment succeeds
-
-Payment Link
-
-Revenue risk
-      ↓
-Policy approval
-      ↓
-Create Razorpay Payment Link
-      ↓
-Customer completes payment
-
-Human Escalation
-
-Automatic recovery not allowed
-      ↓
-Create HumanReview record
-      ↓
-Human reviews case
-      ↓
-Approve / Reject
-
-8. Verification
-
-A recovery action is not considered successful merely because an action was executed.
-
-REVIVE verifies the outcome.
-
-For Razorpay Payment Links, the system checks the provider-side payment-link state and paid amount.
-
-Conceptually:
-
-Recovery Executed
-       ↓
-Provider Verification
-       ↓
-Payment Confirmed?
-   ┌───────┴───────┐
-   │               │
-  YES              NO
-   ↓               ↓
-Recovered       Pending /
-Revenue         Not verified
-
-9. Revenue Measurement
-
-After successful verification, the recovered amount is recorded.
-
-The analytics layer aggregates:
-
-total cases,
-
-recovered cases,
-
-revenue recovered,
-
-revenue at risk,
-
-recovery rate,
-
-scenario-level recovery performance,
-
-recovery trends.
-
-10. Audit Trail
-
-Every significant stage is recorded for traceability.
-
-Examples:
-
-risk_scored
-diagnosed
-decision_made
-policy_approved
-policy_blocked
-recovery_executed
-verification_completed
-human_escalation
-human_review_approved
-human_review_rejected
-
-This provides a clear explanation of what happened to each revenue-risk case.
-
-🏗️ Architecture
-
-High-Level Architecture
-
-                         ┌─────────────────────┐
-                         │      RAZORPAY       │
-                         │ Payments / Links /  │
-                         │ Subscriptions /     │
-                         │ Webhooks             │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │  EVENT INGESTION    │
-                         │     FastAPI         │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │ REVENUE RISK ENGINE │
-                         │ Deterministic Rules │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │   ML RISK SCORE     │
-                         │   scikit-learn      │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │      AI ENGINE      │
-                         │ Diagnosis + Decision │
-                         │       LLM API       │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │    POLICY ENGINE    │
-                         │  Safety / Limits    │
-                         └───────┬─┬─┬─────────┘
-                                 │ │ │
-                       APPROVE ──┘ │ └── HUMAN
-                                 │
-                              BLOCK
-                                 │
-                                 ▼
-                         ┌─────────────────────┐
-                         │ RECOVERY EXECUTION  │
-                         │ Razorpay / Review   │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │     VERIFICATION    │
-                         │ Payment confirmation │
-                         └──────────┬──────────┘
-                                    │
-                         ┌──────────┴──────────┐
-                         ▼                     ▼
-                  ₹ RECOVERED            AUDIT TRAIL
-                         │                     │
-                         └──────────┬──────────┘
-                                    ▼
-                         ┌─────────────────────┐
-                         │     POSTGRESQL      │
-                         │ Cases / Customers / │
-                         │ Actions / Reviews / │
-                         │ Audit Logs          │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │    REACT + VITE     │
-                         │ Business Dashboard  │
-                         └─────────────────────┘
-
-Component Responsibilities
-
-Component
-
-Responsibility
-
-Razorpay
-
-Payment execution, Payment Links, provider verification, webhooks
-
-FastAPI
-
-REST API and event ingestion
-
-Revenue Risk Engine
-
-Deterministic revenue-risk evaluation
-
-scikit-learn
-
-ML risk scoring
-
-AI Diagnosis Engine
-
-Diagnose the revenue-loss situation
-
-AI Decision Engine
-
-Recommend bounded recovery actions
-
+```text
+ML
+ ↓
+Risk Score
+ ↓
+RAG
+ ↓
+Relevant Context
+ ↓
+LLM
+ ↓
+Diagnosis + Recommendation
+ ↓
 Policy Engine
+ ↓
+Validation
+ ↓
+Recovery Engine
+ ↓
+Razorpay
+ ↓
+Verification
+ ↓
+Recovered Revenue
+```
 
-Enforce deterministic safety rules
+> **REVIVE uses ML to understand risk, RAG to provide relevant context, and AI to reason about the right action — while deterministic policies remain responsible for controlling execution.**
 
-Recovery Service
+---
 
-Execute approved recovery actions
+# 💰 Revenue-Loss Scenarios
 
-Verification Service
+## 1. Failed Payment
 
-Confirm recovery outcome
+**Example: ₹2,499**
 
-PostgreSQL
-
-Persistent application data
-
-Redis
-
-Supporting infrastructure for asynchronous/background processing
-
-Celery
-
-Background-task infrastructure/dependency
-
-React
-
-Dashboard UI
-
-Vite
-
-Frontend development/build tooling
-
-Recharts
-
-Analytics visualizations
-
-Axios
-
-Frontend API communication
-
-Lucide React
-
-UI icons
-
-Docker
-
-Containerization
-
-Docker Compose
-
-Local infrastructure orchestration
-
-💰 Revenue-Loss Scenarios
-
-REVIVE demonstrates five required revenue-loss scenarios.
-
-1. Failed Payment
-
-Example:
-
-Amount: ₹2,499
-Event: Payment failed
-Reason: Temporary failure
-
-Workflow:
-
+```text
 Payment Failed
       ↓
-Risk Score
+Risk Analysis
       ↓
-Diagnosis: Transient Failure
+AI Diagnosis
       ↓
-Decision: retry_payment
+Retry Payment
       ↓
-Policy: APPROVE
-      ↓
-Retry
-      ↓
-Payment Success
+Payment Successful
       ↓
 ₹2,499 Recovered
+```
 
-2. Checkout Abandonment
+---
 
-Example:
+## 2. Checkout Abandonment
 
-Cart Value: ₹5,999
-Previous Purchases: 3
-Payment History: Successful
-Time Since Abandonment: 30 minutes
+**Example: ₹5,999**
 
-The AI evaluates the available customer and cart context and can select a Payment Link recovery action.
+REVIVE evaluates:
 
+* Customer history
+* Cart value
+* Previous purchases
+* Payment history
+* Time since abandonment
+
+```text
 Checkout Abandoned
         ↓
-Customer/Cart Analysis
+Customer + Cart Analysis
         ↓
-Risk Score
+Recovery Eligible
         ↓
-AI Decision
-        ↓
-Policy Approval
-        ↓
-Razorpay Payment Link
+Payment Link
         ↓
 Payment
         ↓
 Verification
-        ↓
-Revenue Recovered
+```
 
-3. Subscription Failure
+---
 
-Example:
+## 3. Subscription Failure
 
-Amount: ₹7,999
-Scenario: Subscription failure
-Failure: Temporary gateway error
+**Example: ₹7,999**
 
-The scenario demonstrates failure classification and recovery through a Razorpay-based recovery action followed by provider verification.
+```text
+Subscription Charge Failed
+          ↓
+Failure Classification
+          ↓
+AI Decision
+          ↓
+Recovery Action
+          ↓
+Payment Verification
+```
 
-4. Overdue Receivable
+---
 
-Example:
+## 4. Overdue Receivable
 
-Invoice: INV-REVIVE-004
-Amount: ₹48,000
-Days Overdue: 5
-Previous Purchases: 12
-Payment Behavior: Usually pays on time
+**Example: ₹48,000**
 
-The system considers invoice amount, overdue duration, customer history and payment behavior before selecting a recovery action.
+REVIVE evaluates:
+
+* Invoice amount
+* Days overdue
+* Customer history
+* Previous purchases
+* Payment behavior
 
 Possible actions:
 
-Reminder
-Payment Link
-Human Escalation
+* Friendly reminder
+* Payment Link
+* Human escalation
 
-5. Repeated Failure
+---
 
-This scenario demonstrates the most important safety behavior.
+## 5. Repeated Payment Failure
 
+```text
 Payment Failed
       ↓
-Retry #1 → FAILED
+Retry #1
       ↓
-Retry #2 → FAILED
+Failed
       ↓
-Automatic Retry Limit Reached
+Retry #2
       ↓
-STOP
+Failed
       ↓
-Human Escalation
-
-REVIVE must not continue retrying indefinitely.
-
-This ensures that automation remains bounded and auditable.
-
-🤖 AI Decision Pipeline
-
-REVIVE separates AI reasoning into distinct stages.
-
-Event
-  ↓
-Risk Engine
-  ↓
-Risk Score
-  ↓
-AI Diagnosis
-  ↓
-AI Decision
-  ↓
-Policy Engine
-  ↓
-Approved Action
-
-Why separate AI from policy?
-
-The AI layer provides reasoning and recommendations.
-
-The Policy Engine provides deterministic enforcement.
-
-This separation prevents an LLM recommendation from directly bypassing business safety controls.
-
-🛡️ Safety and Policy Controls
-
-REVIVE is intentionally designed with bounded automation.
-
-Retry Limits
-
-Repeated failures cannot trigger unlimited automatic retries.
-
-Human-in-the-Loop
-
-Cases requiring additional judgment are routed to the Human Review screen.
-
-Policy Gate
-
-AI recommendations must pass deterministic policy checks before recovery execution.
-
-Idempotent Webhooks
-
-Razorpay webhook event IDs are recorded to prevent duplicate processing.
-
-Signature Verification
-
-Razorpay webhook signatures are verified using HMAC-SHA256 when a webhook secret is configured.
-
-Verification Before Recovery Accounting
-
-A recovery action is not automatically treated as recovered revenue without verification.
-
-🧰 Technology Stack
-
-Backend
-
-Python 3
-
-FastAPI
-
-Pydantic / Pydantic Settings
-
-SQLAlchemy
-
-PostgreSQL
-
-psycopg2
-
-scikit-learn
-
-pandas
-
-NumPy
-
-OpenAI API
-
-Razorpay Python SDK
-
-HTTPX
-
-python-dotenv
-
-python-multipart
-
-Celery
-
-Redis
-
-Frontend
-
-React
-
-Vite
-
-JavaScript / JSX
-
-Axios
-
-React Router
-
-Recharts
-
-Lucide React
-
-DevOps / Infrastructure
-
-Docker
-
-Docker Compose
-
-PostgreSQL container
-
-Redis container
-
-Git / GitHub
-
-Data / Evaluation
-
-CSV datasets
-
-pandas
-
-NumPy
-
-scikit-learn
-
-Python evaluation scripts
-
-JSON evaluation results
-
-📁 Project Structure
-
+RETRY LIMIT REACHED
+      ↓
+STOP AUTOMATION
+      ↓
+HUMAN REVIEW
+```
+
+**REVIVE never retries indefinitely.**
+
+---
+
+# 🛡️ Safety & Policy Controls
+
+* **Retry Limits** — prevents unlimited automatic retries
+* **Policy Gate** — AI recommendations require deterministic approval
+* **Human Escalation** — cases beyond safe automation are sent for review
+* **Webhook Idempotency** — prevents duplicate event processing
+* **Signature Verification** — validates Razorpay webhook authenticity
+* **Payment Verification** — recovered revenue is recorded only after confirmation
+
+---
+
+# 🧰 Technology Stack
+
+| Layer                      | Technologies                                              |
+| -------------------------- | --------------------------------------------------------- |
+| **Backend**                | Python, FastAPI, SQLAlchemy, PostgreSQL                   |
+| **AI**                     | LLM API, OpenAI API, Structured JSON                      |
+| **RAG**                    | Retrieval-Augmented Generation, Knowledge Retrieval       |
+| **ML**                     | scikit-learn, pandas, NumPy                               |
+| **Payments**               | Razorpay Payments, Payment Links, Subscriptions, Webhooks |
+| **Async / Infrastructure** | Celery, Redis, Docker, Docker Compose                     |
+| **Frontend**               | React, Vite, Axios, React Router                          |
+| **Visualization**          | Recharts                                                  |
+| **UI**                     | Lucide React                                              |
+| **Development**            | Git, GitHub                                               |
+
+---
+
+# 📁 Project Structure
+
+```text
 REVIVE/
 │
 ├── backend/
 │   ├── app/
 │   │   ├── agents/
-│   │   │   ├── diagnosis.py
-│   │   │   ├── decision.py
-│   │   │   └── recovery.py
-│   │   │
 │   │   ├── api/
-│   │   │   ├── audit.py
-│   │   │   ├── cases.py
-│   │   │   ├── dashboard.py
-│   │   │   ├── recovery.py
-│   │   │   └── review.py
-│   │   │
 │   │   ├── policy/
-│   │   │   └── rules.py
-│   │   │
 │   │   ├── services/
-│   │   │   ├── ai_service.py
-│   │   │   ├── orchestrator.py
-│   │   │   ├── rag_service.py
-│   │   │   ├── razorpay.py
-│   │   │   ├── risk_engine.py
-│   │   │   └── verification.py
-│   │   │
 │   │   ├── webhooks/
-│   │   │   └── razorpay.py
-│   │   │
 │   │   ├── config.py
 │   │   ├── database.py
 │   │   ├── main.py
 │   │   └── models.py
 │   │
-│   ├── tests/
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── *_test.json
+│   └── tests/
 │
 ├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── RecoveryFeed.jsx
-│   │   │   ├── CaseDetail.jsx
-│   │   │   ├── Analytics.jsx
-│   │   │   ├── AuditTrail.jsx
-│   │   │   └── HumanReview.jsx
-│   │   │
-│   │   ├── services/
-│   │   │   └── api.js
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── index.css
-│   │
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── vite.config.js
-│   └── Dockerfile
+│   └── src/
+│       ├── pages/
+│       └── services/
 │
 ├── data/
-│   ├── customers.csv
-│   ├── transactions.csv
-│   └── README.md
-│
 ├── evaluation/
-│   ├── evaluate.py
-│   └── results.json
-│
 ├── demo/
-│   └── demo-script.md
-│
 ├── architecture/
-│
 ├── docker-compose.yml
 ├── .env.example
-├── .gitignore
 └── README.md
+```
 
-📊 Dashboard
+---
 
-REVIVE provides six primary dashboard screens.
+# 📊 Dashboard
 
-1. Dashboard
+REVIVE provides six major dashboard screens:
 
-Provides an overall revenue-recovery summary including:
+1. **Dashboard**
+2. **Recovery Feed**
+3. **Case Detail**
+4. **Analytics**
+5. **Audit Trail**
+6. **Human Review**
 
-Revenue Recovered
+The dashboard provides visibility into:
 
-Revenue at Risk
+* Revenue at risk
+* Revenue recovered
+* Recovery rate
+* Case status
+* Risk scores
+* AI decisions
+* Recovery actions
+* Scenario performance
+* Human review
+* Audit events
 
-Recovery Rate
+---
 
-Cases Processed
+# 📸 Screenshots
 
-Recovery activity
+Store screenshots in:
 
-2. Recovery Feed
+```text
+docs/screenshots/
+├── dashboard.png
+├── recovery-feed.png
+├── case-detail.png
+├── analytics.png
+├── audit-trail.png
+└── human-review.png
+```
 
-Shows revenue-risk cases and their current recovery state.
+Add them to the README:
 
-Typical information includes:
+```markdown
+![Dashboard](docs/screenshots/dashboard.png)
 
-Case ID
+![Recovery Feed](docs/screenshots/recovery-feed.png)
 
-Customer
+![Case Detail](docs/screenshots/case-detail.png)
 
-Scenario
+![Analytics](docs/screenshots/analytics.png)
 
-Amount
+![Audit Trail](docs/screenshots/audit-trail.png)
 
-Risk score
+![Human Review](docs/screenshots/human-review.png)
+```
 
-Status
+---
 
-Recovery action
+# 🔌 API Overview
 
-3. Case Detail
+| Method   | Endpoint                   | Purpose          |
+| -------- | -------------------------- | ---------------- |
+| **GET**  | `/`                        | Backend status   |
+| **GET**  | `/health`                  | Health check     |
+| **POST** | `/webhooks/razorpay`       | Razorpay webhook |
+| **GET**  | `/api/dashboard`           | Dashboard data   |
+| **GET**  | `/api/dashboard/analytics` | Analytics        |
+| **GET**  | `/api/cases`               | Revenue cases    |
+| **GET**  | `/api/recovery`            | Recovery actions |
+| **GET**  | `/api/audit`               | Audit events     |
+| **GET**  | `/api/review`              | Human review     |
 
-Provides a detailed view of an individual case.
+---
 
-Includes:
+# 💳 Razorpay Integration
 
-Revenue at Risk
+REVIVE uses **Razorpay Test Mode** for payment recovery demonstrations.
 
-Risk Score
+Integration includes:
 
-Status
+* Payments
+* Payment Links
+* Subscription-related events
+* Webhooks
+* Payment verification
+* Webhook signature verification
 
-Payment Status
+> **Never commit API keys, webhook secrets, or other credentials to GitHub.**
 
-Scenario
+---
 
-Customer
+# 📈 Data & Evaluation
 
-Amount
+REVIVE includes synthetic data for testing and evaluation.
 
-AI Diagnosis
+```text
+data/
+├── customers.csv
+├── transactions.csv
+└── README.md
+```
 
-AI Decision
+Evaluation:
 
-Policy Result
+```text
+evaluation/
+├── evaluate.py
+└── results.json
+```
 
-Recovery Action
+The evaluation covers the revenue-recovery scenarios and system performance.
 
-4. Analytics
+---
 
-Provides business-level recovery analysis:
+# ⚙️ Local Setup
 
-Revenue recovered
+## Prerequisites
 
-Recovery rate
+* Python 3.x
+* Node.js + npm
+* Docker Desktop
+* Git
+* Razorpay Test Mode account
+* LLM API key
 
-Revenue at risk
+## 1. Start Infrastructure
 
-Cases processed
-
-Recovery trend
-
-Recovery by scenario
-
-5. Audit Trail
-
-Provides a chronological history of system actions.
-
-Useful for:
-
-debugging,
-
-compliance-style traceability,
-
-understanding AI/policy decisions,
-
-tracking human interventions.
-
-6. Human Review
-
-Displays cases requiring human intervention.
-
-Reviewers can:
-
-inspect the case,
-
-view the reason for escalation,
-
-see the AI recommendation,
-
-approve the case,
-
-reject the case.
-
-📸 Screenshots
-
-Add the following screenshots to docs/screenshots/ using the exact filenames below. This keeps the README presentation clean on GitHub.
-
-docs/
-└── screenshots/
-    ├── dashboard.png
-    ├── recovery-feed.png
-    ├── case-detail.png
-    ├── analytics.png
-    ├── audit-trail.png
-    └── human-review.png
-
-Dashboard
-
-
-
-Recovery Feed
-
-
-
-Case Detail
-
-
-
-Analytics
-
-
-
-Audit Trail
-
-
-
-Human Review
-
-
-
-🔌 API Overview
-
-The FastAPI backend exposes endpoints for the major application capabilities.
-
-Endpoint
-
-Purpose
-
-GET /
-
-Backend status
-
-GET /health
-
-Health check
-
-POST /webhooks/razorpay
-
-Razorpay webhook ingestion
-
-/api/dashboard
-
-Dashboard data
-
-/api/dashboard/analytics
-
-Analytics data
-
-/api/cases
-
-Revenue-risk case data
-
-/api/recovery
-
-Recovery actions
-
-/api/audit
-
-Audit trail
-
-/api/review
-
-Human review queue
-
-The exact request/response structures are implemented in the corresponding FastAPI routers under:
-
-backend/app/api/
-
-💳 Razorpay Integration
-
-REVIVE integrates with Razorpay Test Mode for revenue-recovery demonstrations.
-
-The integration supports:
-
-Razorpay Payments
-
-Razorpay Payment Links
-
-Razorpay Subscriptions-related event handling
-
-Razorpay Webhooks
-
-Payment verification
-
-Provider references
-
-Webhook signature verification
-
-For local development and demonstration, use Razorpay Test Mode.
-
-No production credentials should be committed to GitHub.
-
-🔐 Webhook Security
-
-REVIVE implements two important webhook protections.
-
-Signature Verification
-
-When RAZORPAY_WEBHOOK_SECRET is configured, the incoming webhook body is verified using HMAC-SHA256.
-
-Webhook Request
-      ↓
-Read Raw Body
-      ↓
-Calculate HMAC-SHA256
-      ↓
-Compare With Razorpay Signature
-      ↓
-Valid?
- ┌────┴────┐
- YES       NO
- ↓         ↓
-Process   Reject
-
-Event Idempotency
-
-The Razorpay event ID is stored in the database.
-
-If the same event is received again:
-
-Existing Event ID?
-      ↓
-     YES
-      ↓
-Return duplicate
-      ↓
-Do not process again
-
-This prevents duplicate recovery processing.
-
-🗄️ Data Model
-
-The backend persists the major business entities in PostgreSQL.
-
-Core models include:
-
-WebhookEvent
-
-Customer
-
-RevenueCase
-
-RecoveryAction
-
-AuditLog
-
-HumanReview
-
-Conceptually:
-
-Customer
-   │
-   └──── RevenueCase
-             │
-             ├──── RecoveryAction
-             ├──── AuditLog
-             └──── HumanReview
-
-WebhookEvent
-   │
-   └──── Event Processing
-
-📈 Data and Evaluation
-
-REVIVE includes a synthetic revenue-event dataset for development and evaluation.
-
-Available data includes:
-
-data/customers.csv
-data/transactions.csv
-
-The evaluation package contains:
-
-evaluation/evaluate.py
-evaluation/results.json
-
-The evaluation layer is intended to measure the behavior of the revenue-risk and recovery workflow using repeatable synthetic data.
-
-🧪 Scenario Test Payloads
-
-The repository includes test payloads for the required scenarios:
-
-backend/
-├── revive-test-001.json
-├── recovery-test.json
-├── checkout-abandonment-test.json
-├── checkout-recovery.json
-├── subscription-failure-test.json
-└── overdue-receivable-test.json
-
-These provide reproducible inputs for demonstrations and local testing.
-
-⚙️ Prerequisites
-
-Install the following before running REVIVE locally:
-
-Python 3.x
-
-Node.js
-
-npm
-
-Docker Desktop
-
-Git
-
-A Razorpay Test Mode account
-
-An LLM API key configured for the AI layer
-
-Recommended development environment:
-
-Visual Studio Code
-
-PowerShell on Windows
-
-🔑 Environment Configuration
-
-Create a .env file in the project root based on .env.example.
-
-Example:
-
-DATABASE_URL=postgresql://revive:revivepassword@localhost:5432/revive
-
-OPENAI_API_KEY=your_openai_api_key
-
-RAZORPAY_KEY_ID=your_razorpay_test_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_test_key_secret
-RAZORPAY_WEBHOOK_SECRET=your_razorpay_webhook_secret
-
-REDIS_URL=redis://localhost:6379/0
-
-Important
-
-Never commit .env to GitHub.
-
-Only .env.example should be committed.
-
-💻 Local Setup
-
-1. Clone the repository
-
-git clone https://github.com/Dhedeepya123/REVIVE.git
-cd REVIVE
-
-2. Start infrastructure
-
-From the project root:
-
+```powershell
 docker compose up -d
+```
 
-This starts:
+## 2. Start Backend
 
-PostgreSQL
-
-Redis
-
-Check the containers:
-
-docker compose ps
-
-3. Create and activate the Python environment
-
-From the backend directory:
-
-Windows PowerShell
-
+```powershell
 cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-
-4. Install backend dependencies
-
 pip install -r requirements.txt
-
-5. Start the backend
-
 uvicorn app.main:app --host 127.0.0.1 --port 8010
+```
 
-Backend:
+## 3. Start Frontend
 
-http://127.0.0.1:8010
-
-Health check:
-
-http://127.0.0.1:8010/health
-
-6. Install frontend dependencies
-
-Open another terminal:
-
+```powershell
 cd frontend
 npm install
-
-7. Start the frontend
-
 npm run dev
+```
 
-Frontend:
+### Application URLs
 
-http://localhost:5173/
+**Frontend:** `http://localhost:5173/`
 
-▶️ Running the Application
+**Backend:** `http://127.0.0.1:8010/`
 
-Once the infrastructure, backend and frontend are running:
+---
 
-Browser
-  ↓
-http://localhost:5173/
-  ↓
-React + Vite Dashboard
-  ↓
-FastAPI Backend
-  ↓
-PostgreSQL / Razorpay / AI Layer
+# 🧪 Demo Flow
 
-The application can then be demonstrated using the supplied scenario payloads and dashboard screens.
-
-🧪 Testing the Five Scenarios
-
-The recommended demonstration order is:
-
-Scenario 1 — Failed Payment
-
-revive-test-001.json
-
-Demonstrates:
-
-Failure → Risk → Diagnosis → Retry → Verification → Recovery
-
-Scenario 2 — Checkout Abandonment
-
-checkout-abandonment-test.json
-checkout-recovery.json
-
-Demonstrates:
-
-Abandonment → Customer Context → Payment Link → Payment → Verification
-
-Scenario 3 — Subscription Failure
-
-subscription-failure-test.json
-
-Demonstrates:
-
-Subscription Failure → Diagnosis → Recovery → Verification
-
-Scenario 4 — Overdue Receivable
-
-overdue-receivable-test.json
-
-Demonstrates:
-
-Overdue Invoice → Customer Evaluation → Recovery Action → Verification
-
-Scenario 5 — Repeated Failure
-
-Demonstrates the safety boundary:
-
-Failure
- ↓
-Retry #1 → Failed
- ↓
-Retry #2 → Failed
- ↓
-STOP
- ↓
-Human Review
-
-🐳 Docker
-
-REVIVE includes Docker support for the backend and frontend and a Docker Compose configuration for local infrastructure.
-
-The default Compose services include:
-
-postgres
-redis
-
-Start infrastructure:
-
-docker compose up -d
-
-Stop infrastructure:
-
-docker compose down
-
-To remove the development database volumes as well:
-
-docker compose down -v
-
-Use the volume-removal command carefully because it deletes persisted local database data.
-
-📊 Evaluation
-
-The repository includes an evaluation component:
-
-evaluation/evaluate.py
-
-and generated/recorded results:
-
-evaluation/results.json
-
-Evaluation can be extended to measure:
-
-risk-scoring performance,
-
-recovery decision accuracy,
-
-scenario classification,
-
-recovery success rate,
-
-false recovery decisions,
-
-policy compliance,
-
-human-escalation behavior.
-
-🧭 Demo Flow
-
-A concise project demonstration can follow this sequence:
-
-1. Open REVIVE Dashboard
-             ↓
+1. Open the Dashboard
 2. Show revenue-at-risk metrics
-             ↓
 3. Open Recovery Feed
-             ↓
-4. Open a Failed Payment case
-             ↓
-5. Show risk score + AI diagnosis + AI decision
-             ↓
-6. Show Policy Engine approval
-             ↓
-7. Show recovery execution
-             ↓
-8. Show payment verification
-             ↓
-9. Show Analytics and recovered revenue
-             ↓
-10. Demonstrate Repeated Failure
-             ↓
-11. Show retry limit
-             ↓
-12. Show Human Review escalation
-             ↓
-13. Approve/Reject from Human Review
-             ↓
-14. Open Audit Trail
-             ↓
-15. Explain complete end-to-end traceability
+4. Select a revenue case
+5. Show ML Risk Score
+6. Show RAG-retrieved context
+7. Show AI Diagnosis
+8. Show AI Decision
+9. Show Policy Engine decision
+10. Execute/inspect recovery
+11. Show payment verification
+12. Open Analytics
+13. Demonstrate repeated failure
+14. Show Human Review
+15. Show Audit Trail
 
-A longer scripted demonstration is available in:
+---
 
-demo/demo-script.md
+# 🔒 Security
 
-📦 GitHub Repository
+* Razorpay Test Mode for development
+* Secrets stored in `.env`
+* `.env` excluded from Git
+* Webhook signature verification
+* Webhook event-id idempotency
+* Bounded automatic retries
+* Human escalation
+* Policy-controlled AI execution
 
-Repository:
+---
 
-Dhedeepya123/REVIVE
+# 🚧 Limitations
 
-The repository is structured to be directly cloned and run by another developer after configuring the required environment variables.
+* Test/synthetic events are used for demonstrations
+* Evaluation data is synthetic
+* Production deployment requires production credentials and operational controls
+* AI functionality depends on LLM API availability
 
-🔒 Security Notes
+---
 
-Use Razorpay Test Mode during development and demonstrations.
+# 🔮 Future Enhancements
 
-Never commit API keys or secrets.
+* Real-time event streaming
+* Advanced ML models
+* Customer lifetime-value scoring
+* Email/SMS/WhatsApp recovery
+* A/B testing
+* Multi-payment-provider support
+* Advanced fraud detection
+* Production monitoring
+* CI/CD automation
 
-Keep .env outside version control.
+---
 
-Configure RAZORPAY_WEBHOOK_SECRET for signed webhook verification.
+# 🧠 Design Principles
 
-Do not place production credentials inside test payloads.
+* **Intelligence** — combine ML risk scoring, RAG context, and LLM reasoning
+* **Bounded Autonomy** — AI cannot bypass deterministic policies
+* **Verification** — confirm recovery before recording revenue
+* **Human Oversight** — escalate cases beyond safe automation
+* **Auditability** — maintain a traceable decision history
 
-Human review remains available for cases that exceed automated safety boundaries.
+---
 
-🚧 Limitations
+# 🏁 Final Architecture Summary
 
-REVIVE is primarily a demonstration and evaluation platform for autonomous revenue recovery.
+```text
+                         ┌────────────────┐
+                         │    RAZORPAY    │
+                         └───────┬────────┘
+                                 ↓
+                       ┌──────────────────┐
+                       │ EVENT INGESTION   │
+                       └────────┬─────────┘
+                                ↓
+                    ┌────────────────────────┐
+                    │ REVENUE RISK ENGINE   │
+                    └───────────┬────────────┘
+                                ↓
+                       ┌────────────────┐
+                       │  ML RISK SCORE │
+                       └───────┬────────┘
+                               ↓
+                       ┌────────────────┐
+                       │ RAG RETRIEVAL  │
+                       └───────┬────────┘
+                               ↓
+                  ┌──────────────────────────┐
+                  │    AI DIAGNOSIS          │
+                  │          +               │
+                  │    AI DECISION           │
+                  └────────────┬─────────────┘
+                               ↓
+                    ┌────────────────────┐
+                    │   POLICY ENGINE    │
+                    └──────┬────┬───────┘
+                           │    │
+              APPROVE ─────┘    └──── BLOCK
+                  ↓                    ↓
+           ┌─────────────┐           STOP
+           │  RECOVERY   │
+           └──────┬──────┘
+                  ↓
+           ┌─────────────┐
+           │ VERIFICATION│
+           └──────┬──────┘
+                  ↓
+          ┌──────────────────┐
+          │ ₹ REVENUE        │
+          │ RECOVERED         │
+          └────────┬─────────┘
+                   ↓
+             ┌────────────┐
+             │ AUDIT TRAIL│
+             └────────────┘
 
-Depending on the deployment environment:
+             HUMAN ESCALATION
+                    ↓
+             ┌────────────┐
+             │HUMAN REVIEW│
+             └────────────┘
+```
 
-Razorpay test events may be simulated locally.
+### Core Principle
 
-Some recovery scenarios use synthetic payloads.
+> **REVIVE combines Machine Learning for risk scoring, RAG for relevant context, AI for diagnosis and decision-making, deterministic policies for safety, Razorpay for recovery execution, verification for correctness, and human review for bounded autonomy.**
 
-Production payment operations require production-grade credentials and operational controls.
+---
 
-AI outputs depend on the configured LLM provider/API availability.
+# 📄 License
 
-Background-task infrastructure is included but production-scale worker deployment requires additional operational configuration.
+This project is intended as a software engineering and AI revenue-recovery demonstration project.
 
-The supplied datasets are synthetic/demo-oriented rather than production customer data.
+---
 
-🔮 Future Enhancements
+# 👤 Author
 
-Potential production extensions include:
-
-Real-time event streaming at scale
-
-Dedicated Celery workers and task monitoring
-
-Advanced customer lifetime-value features
-
-More sophisticated ML models
-
-Model monitoring and drift detection
-
-Richer RAG-based customer/payment context retrieval
-
-Automated email/SMS/WhatsApp recovery campaigns
-
-A/B testing of recovery strategies
-
-Multi-payment-provider support
-
-Role-based access control
-
-Production-grade secrets management
-
-Observability with metrics, logs and distributed tracing
-
-Automated CI/CD deployment
-
-Advanced fraud and anomaly detection
-
-Real-time recovery notifications
-
-🧠 Design Principles
-
-REVIVE is built around five principles:
-
-1. Intelligence
-
-Use ML and AI to understand revenue risk.
-
-2. Bounded Autonomy
-
-AI can recommend actions, but deterministic policy rules control execution.
-
-3. Verification
-
-Do not count revenue as recovered until the outcome is verified.
-
-4. Human Oversight
-
-Escalate cases when automation reaches its safety boundary.
-
-5. Auditability
-
-Every important decision and action should be traceable.
-
-🏁 Final Architecture Summary
-
-┌─────────────────────────────────────────────────────────────┐
-│                         REVIVE                              │
-│        Autonomous AI Revenue Recovery Agent                │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Razorpay                                                    │
-│     │                                                       │
-│     ▼                                                       │
-│  Event Ingestion                                            │
-│     │                                                       │
-│     ▼                                                       │
-│  Revenue Risk Engine                                        │
-│     │                                                       │
-│     ▼                                                       │
-│  ML Risk Score                                              │
-│     │                                                       │
-│     ▼                                                       │
-│  AI Diagnosis → AI Decision                                 │
-│     │                                                       │
-│     ▼                                                       │
-│  Policy Engine ───────► BLOCK                               │
-│     │                                                       │
-│     ├───────────────► HUMAN REVIEW                          │
-│     │                                                       │
-│     ▼                                                       │
-│  Recovery Execution                                         │
-│     │                                                       │
-│     ▼                                                       │
-│  Verification                                               │
-│     │                                                       │
-│     ▼                                                       │
-│  ₹ Revenue Recovered + Audit Trail                          │
-│     │                                                       │
-│     ▼                                                       │
-│  PostgreSQL                                                 │
-│     │                                                       │
-│     ▼                                                       │
-│  React + Vite Dashboard                                     │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-
-📄 License
-
-This project is intended as a software engineering / AI revenue-recovery demonstration project.
-
-Add the appropriate open-source license here if the repository is intended for public redistribution.
-
-👤 Author
-
-Dhedeepya123
-GitHub: Dhedeepya123
+**Dhedeepya123**
