@@ -1,0 +1,14 @@
+{
+  "event": "subscription.charged.failed",
+  "payload": {
+    "customer_id": "CUST-003",
+    "customer_name": "Subscription Customer",
+    "customer_email": "subscription@example.com",
+    "amount": 7999,
+    "scenario": "subscription_failure",
+    "subscription_id": "sub_test_revive_003",
+    "payment_status": "failed",
+    "failure_reason": "temporary_gateway_error",
+    "retry_count": 0
+  }
+}

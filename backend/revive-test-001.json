@@ -1,0 +1,1 @@
+﻿{"event":"payment.failed","payload":{"payment":{"entity":{"id":"pay_test_001","amount":249900,"status":"failed","error_description":"Temporary network failure","method":"card"}},"customer_id":"CUST-001","customer_name":"Test Customer","customer_email":"test@example.com","amount":2499,"scenario":"failed_payment","failure_reason":"Temporary network failure"}}

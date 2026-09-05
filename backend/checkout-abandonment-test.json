@@ -1,0 +1,14 @@
+﻿{
+  "event": "checkout.abandoned",
+  "payload": {
+    "customer_id": "CUST-002",
+    "customer_name": "Checkout Customer",
+    "customer_email": "checkout@example.com",
+    "amount": 5999,
+    "scenario": "checkout_abandonment",
+    "cart_value": 5999,
+    "previous_purchases": 3,
+    "payment_history": "successful",
+    "minutes_since_abandonment": 30
+  }
+}

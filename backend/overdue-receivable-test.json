@@ -1,0 +1,16 @@
+{
+  "event": "invoice.overdue",
+  "payload": {
+    "customer_id": "CUST-004",
+    "customer_name": "B2B Customer",
+    "customer_email": "b2b@example.com",
+    "amount": 48000,
+    "scenario": "overdue_receivable",
+    "invoice_id": "INV-REVIVE-004",
+    "invoice_due_date": "2026-08-31",
+    "days_overdue": 5,
+    "payment_history": "mostly_successful",
+    "previous_purchases": 12,
+    "payment_behavior": "usually_pays_on_time"
+  }
+}
